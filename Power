@@ -1,7 +1,7 @@
 if not game:IsLoaded() then
     game.Loaded:Wait()
 end
-wait(7)
+wait(5)
 
 local RS = game:GetService("RunService")
 local Players = game:GetService("Players")
@@ -9,28 +9,33 @@ local UserInputService = game:GetService("UserInputService")
 local Player = Players.LocalPlayer
 
 -- Variables for power management
-local OldPercentatge = 100
+local OldPercentage = 100
 local Power = 100
 local togglePowerConnection
 local isPowerToggled = false
 
+-- New variable for cycling power levels
+local powerLevels = {10, 25, 50, 75, 95, 100}
+local currentPowerIndex = #powerLevels
+
 -- Function to set power percentage
-local function setPowerPercentage(Percentatge)
-    if tonumber(Percentatge) > OldPercentatge then
+local function setPowerPercentage(Percentage)
+    if tonumber(Percentage) > OldPercentage then
         repeat
             Power = Power + 5
             Player.Backpack.ServerTraits.Input:FireServer({"increase"}, true)
-        until Power == tonumber(Percentatge)
-    elseif tonumber(Percentatge) < OldPercentatge then
+        until Power == tonumber(Percentage)
+    elseif tonumber(Percentage) < OldPercentage then
         repeat
             Power = Power - 5
             Player.Backpack.ServerTraits.Input:FireServer({"decrease"}, true)
-        until Power == tonumber(Percentatge)
+        until Power == tonumber(Percentage)
     end
-    OldPercentatge = tonumber(Percentatge)
+    OldPercentage = tonumber(Percentage)
+    print("Power set to:", Percentage)
 end
 
--- Function to toggle power percentage
+-- Function to toggle power percentage (5 and 100)
 local function togglePower()
     isPowerToggled = not isPowerToggled
     local targetPower = isPowerToggled and 5 or 100
@@ -38,13 +43,20 @@ local function togglePower()
     setPowerPercentage(targetPower)
 end
 
--- Inputs
+-- Function to cycle through power levels
+local function cyclePower()
+    currentPowerIndex = (currentPowerIndex % #powerLevels) + 1
+    local newPower = powerLevels[currentPowerIndex]
+    setPowerPercentage(newPower)
+end
+
+-- Listen for key presses
 UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
     if not gameProcessedEvent then
-        if input.KeyCode == Enum.KeyCode.LeftBracket then
-            toggleAutoDefender() -- Existing Auto-Defender toggle
-        elseif input.KeyCode == Enum.KeyCode.Semicolon then
-            togglePower() -- Toggle Power Percentage
+        if input.KeyCode == Enum.KeyCode.Semicolon then
+            togglePower() -- Toggle Power Percentage between 5 and 100
+        elseif input.KeyCode == Enum.KeyCode.Quote then
+            cyclePower() -- Cycle through power levels
         end
     end
 end)
@@ -52,6 +64,3 @@ end)
 -- Wait for the player's character to load
 Player.CharacterAdded:Wait()
 print("Player character loaded")
-
--- Initial toggle to start Auto-Defender
-toggleAutoDefender()
