@@ -1,0 +1,57 @@
+if not game:IsLoaded() then
+    game.Loaded:Wait()
+end
+wait(7)
+
+local RS = game:GetService("RunService")
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local Player = Players.LocalPlayer
+
+-- Variables for power management
+local OldPercentatge = 100
+local Power = 100
+local togglePowerConnection
+local isPowerToggled = false
+
+-- Function to set power percentage
+local function setPowerPercentage(Percentatge)
+    if tonumber(Percentatge) > OldPercentatge then
+        repeat
+            Power = Power + 5
+            Player.Backpack.ServerTraits.Input:FireServer({"increase"}, true)
+        until Power == tonumber(Percentatge)
+    elseif tonumber(Percentatge) < OldPercentatge then
+        repeat
+            Power = Power - 5
+            Player.Backpack.ServerTraits.Input:FireServer({"decrease"}, true)
+        until Power == tonumber(Percentatge)
+    end
+    OldPercentatge = tonumber(Percentatge)
+end
+
+-- Function to toggle power percentage
+local function togglePower()
+    isPowerToggled = not isPowerToggled
+    local targetPower = isPowerToggled and 5 or 100
+    print("Power toggled to:", targetPower)
+    setPowerPercentage(targetPower)
+end
+
+-- Inputs
+UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
+    if not gameProcessedEvent then
+        if input.KeyCode == Enum.KeyCode.LeftBracket then
+            toggleAutoDefender() -- Existing Auto-Defender toggle
+        elseif input.KeyCode == Enum.KeyCode.Semicolon then
+            togglePower() -- Toggle Power Percentage
+        end
+    end
+end)
+
+-- Wait for the player's character to load
+Player.CharacterAdded:Wait()
+print("Player character loaded")
+
+-- Initial toggle to start Auto-Defender
+toggleAutoDefender()
