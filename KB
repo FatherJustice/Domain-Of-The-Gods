@@ -20,7 +20,7 @@ local antiKnockBackEnabled = true
 local antiKnockBackConnection
 
 -- Animation toggle state
-local animationToggleEnabled = true
+local animationToggleEnabled = false
 
 -- Function to wait for the player and character to be loaded
 local function waitForPlayer()
@@ -34,8 +34,9 @@ local function antiKnockBack()
     if not antiKnockBackEnabled then return end
 
     pcall(function()
-        if Player.Character and Player.Character:FindFirstChild("Head") then
-            local head = Player.Character.Head
+        local character = Player.Character
+        if character and character:FindFirstChild("Head") then
+            local head = character.Head
             
             if head:FindFirstChild("KnockBacked") then
                 head.KnockBacked:Destroy()
@@ -51,11 +52,13 @@ local function toggleAntiKnockBack()
     if antiKnockBackEnabled then
         if not antiKnockBackConnection then
             antiKnockBackConnection = RS.RenderStepped:Connect(antiKnockBack)
+            print("Anti-KnockBack enabled")
         end
     else
         if antiKnockBackConnection then
             antiKnockBackConnection:Disconnect()
             antiKnockBackConnection = nil
+            print("Anti-KnockBack disabled")
         end
     end
 end
@@ -66,13 +69,13 @@ local function setPowerPercentage(Percentage)
         repeat
             Power = Power + 5
             Player.Backpack.ServerTraits.Input:FireServer({"increase"}, true)
-            wait(0.1) -- Prevent spamming
+            wait(0.1)  -- Prevent spamming
         until Power >= tonumber(Percentage)
     elseif tonumber(Percentage) < OldPercentage then
         repeat
             Power = Power - 5
             Player.Backpack.ServerTraits.Input:FireServer({"decrease"}, true)
-            wait(0.1) -- Prevent spamming
+            wait(0.1)  -- Prevent spamming
         until Power <= tonumber(Percentage)
     end
     OldPercentage = tonumber(Percentage)
@@ -91,6 +94,7 @@ end
 local function cyclePower()
     currentPowerIndex = (currentPowerIndex % #powerLevels) + 1
     local newPower = powerLevels[currentPowerIndex]
+    print("Cycling power to:", newPower)
     setPowerPercentage(newPower)
 end
 
@@ -100,15 +104,19 @@ local function toggleAnimations()
     
     if animationToggleEnabled then
         if Player.Character then
-            Player.Character.Animate.idle.Animation1.AnimationId = "rbxassetid://835140847"
-            Player.Character.Animate.run.RunAnim.AnimationId = "rbxassetid://835140847"
-            Player.Character.Animate.walk.RunAnim.AnimationId = "rbxassetid://835140847"
+            local character = Player.Character
+            character.Animate.idle.Animation1.AnimationId = "rbxassetid://835140847"
+            character.Animate.run.RunAnim.AnimationId = "rbxassetid://835140847"
+            character.Animate.walk.RunAnim.AnimationId = "rbxassetid://835140847"
+            print("Beerus Animation enabled")
         end
     else
         if Player.Character then
-            Player.Character.Animate.run.RunAnim.AnimationId = "rbxassetid://669161051"
-Player.Character.Animate.walk.RunAnim.AnimationId = "rbxassetid://669161051"
-            Player.Character.Animate.idle.Animation1.AnimationId = "rbxassetid://669158098"
+            local character = Player.Character
+            character.Animate.run.RunAnim.AnimationId = "rbxassetid://669161051"
+character.Animate.walk.RunAnim.AnimationId = "rbxassetid://669161051"
+            character.Animate.idle.Animation1.AnimationId = "rbxassetid://669158098"
+            print("Default Animation enabled")
         end
     end
 end
@@ -121,8 +129,6 @@ UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
     if not gameProcessedEvent then
         if input.KeyCode == Enum.KeyCode.RightBracket then
             toggleAntiKnockBack() -- Toggle Anti-KnockBack
-        elseif input.KeyCode == Enum.KeyCode.B then
-            toggleAnimations() -- Toggle Beerus Animation
         elseif input.KeyCode == Enum.KeyCode.Semicolon then
             togglePower() -- Toggle Power between 5 and 100
         elseif input.KeyCode == Enum.KeyCode.Quote then
