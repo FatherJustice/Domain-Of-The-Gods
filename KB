@@ -107,14 +107,12 @@ local function toggleAnimations()
             local character = Player.Character
             character.Animate.idle.Animation1.AnimationId = "rbxassetid://835140847"
             character.Animate.run.RunAnim.AnimationId = "rbxassetid://835140847"
-            character.Animate.walk.RunAnim.AnimationId = "rbxassetid://835140847"
             print("Beerus Animation enabled")
         end
     else
         if Player.Character then
             local character = Player.Character
             character.Animate.run.RunAnim.AnimationId = "rbxassetid://669161051"
-character.Animate.walk.RunAnim.AnimationId = "rbxassetid://669161051"
             character.Animate.idle.Animation1.AnimationId = "rbxassetid://669158098"
             print("Default Animation enabled")
         end
