@@ -24,13 +24,11 @@ local function setPowerPercentage(Percentage)
         repeat
             Power = Power + 5
             Player.Backpack.ServerTraits.Input:FireServer({"increase"}, true)
-            wait(0.1) -- Add a wait to prevent spamming
         until Power >= tonumber(Percentage)
     elseif tonumber(Percentage) < OldPercentage then
         repeat
             Power = Power - 5
             Player.Backpack.ServerTraits.Input:FireServer({"decrease"}, true)
-            wait(0.1) -- Add a wait to prevent spamming
         until Power <= tonumber(Percentage)
     end
     OldPercentage = tonumber(Percentage)
