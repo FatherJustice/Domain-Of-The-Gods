@@ -2,13 +2,25 @@ if not game:IsLoaded() then
     game.Loaded:Wait()
 end
 wait(5)
+
 local RS = game:GetService("RunService")
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local Player = Players.LocalPlayer
 
+-- Variables for power management
+local OldPercentage = 100
+local Power = 100
+local isPowerToggled = false
+local powerLevels = {10, 25, 50, 75, 95, 100}
+local currentPowerIndex = #powerLevels
+
+-- Anti-KnockBack variables
 local antiKnockBackEnabled = true
 local antiKnockBackConnection
+
+-- Animation toggle state
+local animationToggleEnabled = true
 
 -- Function to wait for the player and character to be loaded
 local function waitForPlayer()
@@ -48,12 +60,73 @@ local function toggleAntiKnockBack()
     end
 end
 
+-- Function to set power percentage
+local function setPowerPercentage(Percentage)
+    if tonumber(Percentage) > OldPercentage then
+        repeat
+            Power = Power + 5
+            Player.Backpack.ServerTraits.Input:FireServer({"increase"}, true)
+            wait(0.1) -- Prevent spamming
+        until Power >= tonumber(Percentage)
+    elseif tonumber(Percentage) < OldPercentage then
+        repeat
+            Power = Power - 5
+            Player.Backpack.ServerTraits.Input:FireServer({"decrease"}, true)
+            wait(0.1) -- Prevent spamming
+        until Power <= tonumber(Percentage)
+    end
+    OldPercentage = tonumber(Percentage)
+    print("Power set to:", Percentage)
+end
+
+-- Function to toggle power percentage (5 and 100)
+local function togglePower()
+    isPowerToggled = not isPowerToggled
+    local targetPower = isPowerToggled and 5 or 100
+    print("Power toggled to:", targetPower)
+    setPowerPercentage(targetPower)
+end
+
+-- Function to cycle through power levels
+local function cyclePower()
+    currentPowerIndex = (currentPowerIndex % #powerLevels) + 1
+    local newPower = powerLevels[currentPowerIndex]
+    setPowerPercentage(newPower)
+end
+
+-- Function to toggle animations
+local function toggleAnimations()
+    animationToggleEnabled = not animationToggleEnabled
+    
+    if animationToggleEnabled then
+        if Player.Character then
+            Player.Character.Animate.idle.Animation1.AnimationId = "rbxassetid://835140847"
+            Player.Character.Animate.run.RunAnim.AnimationId = "rbxassetid://835140847"
+            Player.Character.Animate.walk.RunAnim.AnimationId = "rbxassetid://835140847"
+        end
+    else
+        if Player.Character then
+            Player.Character.Animate.run.RunAnim.AnimationId = "rbxassetid://669161051"
+Player.Character.Animate.walk.RunAnim.AnimationId = "rbxassetid://669161051"
+            Player.Character.Animate.idle.Animation1.AnimationId = "rbxassetid://669158098"
+        end
+    end
+end
+
 -- Wait for the player and their character to load
 waitForPlayer()
 
 -- Listen for key presses
 UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
-    if not gameProcessedEvent and input.KeyCode == Enum.KeyCode.RightBracket then
-        toggleAntiKnockBack()
+    if not gameProcessedEvent then
+        if input.KeyCode == Enum.KeyCode.RightBracket then
+            toggleAntiKnockBack() -- Toggle Anti-KnockBack
+        elseif input.KeyCode == Enum.KeyCode.B then
+            toggleAnimations() -- Toggle Beerus Animation
+        elseif input.KeyCode == Enum.KeyCode.Semicolon then
+            togglePower() -- Toggle Power between 5 and 100
+        elseif input.KeyCode == Enum.KeyCode.Quote then
+            cyclePower() -- Cycle through power levels
+        end
     end
 end)
