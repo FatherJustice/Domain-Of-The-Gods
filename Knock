@@ -1,0 +1,47 @@
+if not game:IsLoaded() then
+    game.Loaded:Wait()
+end
+wait(5)
+local RS = game:GetService("RunService")
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local Player = Players.LocalPlayer
+
+local antiKnockBackEnabled = true
+local antiKnockBackConnection
+
+-- Function to wait for the player and character to be loaded
+local function waitForPlayer()
+    while not Player.Character do
+        Player.CharacterAdded:Wait()
+    end
+end
+
+-- Function to handle Anti-KnockBack logic
+local function antiKnockBack()
+    if not antiKnockBackEnabled then return end
+
+    pcall(function()
+        if Player.Character and Player.Character:FindFirstChild("Head") then
+            local head = Player.Character.Head
+            
+            if head:FindFirstChild("KnockBacked") then
+                head.KnockBacked:Destroy()
+            end
+        end
+    end)
+end
+
+-- Function to enable Anti-KnockBack
+local function enableAntiKnockBack()
+    antiKnockBackEnabled = true
+    if not antiKnockBackConnection then
+        antiKnockBackConnection = RS.RenderStepped:Connect(antiKnockBack)
+    end
+end
+
+-- Wait for the player and their character to load
+waitForPlayer()
+
+-- Automatically enable Anti-KnockBack
+enableAntiKnockBack()
