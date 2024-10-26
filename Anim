@@ -1,1 +1,18 @@
+local Bs = true
 
+Player.Character.Animate.idle.Animation1.AnimationId = "rbxassetid://835140847"
+
+Player.CharacterAdded:Connect(function()
+	task.wait(1)
+	if Bs then
+		Player.Character.Animate.idle.Animation1.AnimationId = "rbxassetid://835140847"
+	end
+end)
+
+-- Set the animations based on the state of Bs
+if Bs then
+	Player.Character.Animate.idle.Animation1.AnimationId = "rbxassetid://835140847"
+else
+	Player.Character.Animate.run.RunAnim.AnimationId = "rbxassetid://669161051"
+	Player.Character.Animate.idle.Animation1.AnimationId = "rbxassetid://669158098"
+end
