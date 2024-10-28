@@ -3,7 +3,6 @@ if not game:IsLoaded() then
 end
 wait()
 
-local RS = game:GetService("RunService")
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local Player = Players.LocalPlayer
@@ -11,12 +10,6 @@ local Player = Players.LocalPlayer
 -- Variables for power management
 local OldPercentage = 100
 local Power = 100
-local togglePowerConnection
-local isPowerToggled = false
-
--- New variable for cycling power levels
-local powerLevels = {10, 25, 50, 75, 95, 100}
-local currentPowerIndex = #powerLevels
 
 -- Function to set power percentage
 local function setPowerPercentage(Percentage)
@@ -35,76 +28,15 @@ local function setPowerPercentage(Percentage)
     print("Power set to:", Percentage)
 end
 
--- Function to toggle power percentage (5 and 100)
-local function togglePower()
-    isPowerToggled = not isPowerToggled
-    local targetPower = isPowerToggled and 5 or 100
-    print("Power toggled to:", targetPower)
-    setPowerPercentage(targetPower)
-end
-
--- Function to cycle through power levels
-local function cyclePower()
-    currentPowerIndex = (currentPowerIndex % #powerLevels) + 1
-    local newPower = powerLevels[currentPowerIndex]
-    setPowerPercentage(newPower)
-end
-
--- Anti-KnockBack variables
-local antiKnockBackEnabled = true
-local antiKnockBackConnection
-
--- Function to wait for the player and character to be loaded
-local function waitForPlayer()
-    while not Player.Character do
-        Player.CharacterAdded:Wait()
-    end
-end
-
--- Function to handle Anti-KnockBack logic
-local function antiKnockBack()
-    if not antiKnockBackEnabled then return end
-
-    pcall(function()
-        if Player.Character and Player.Character:FindFirstChild("Head") then
-            local head = Player.Character.Head
-            
-            if head:FindFirstChild("KnockBacked") then
-                head.KnockBacked:Destroy()
-            end
-        end
-    end)
-end
-
--- Function to toggle Anti-KnockBack
-local function toggleAntiKnockBack()
-    antiKnockBackEnabled = not antiKnockBackEnabled
-    
-    if antiKnockBackEnabled then
-        if not antiKnockBackConnection then
-            antiKnockBackConnection = RS.RenderStepped:Connect(antiKnockBack)
-        end
-    else
-        if antiKnockBackConnection then
-            antiKnockBackConnection:Disconnect()
-            antiKnockBackConnection = nil
-        end
-    end
-end
-
--- Wait for the player's character to load
-waitForPlayer()
-print("Player character loaded")
-
--- Listen for key presses for power management
+-- Listen for key presses to adjust power
 UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
     if not gameProcessedEvent then
-        if input.KeyCode == Enum.KeyCode.Semicolon then
-            togglePower() -- Toggle Power Percentage between 5 and 100
-        elseif input.KeyCode == Enum.KeyCode.Quote then
-            cyclePower() -- Cycle through power levels
+        if input.KeyCode == Enum.KeyCode.LeftBracket then
+            setPowerPercentage(5) -- Set power to 5%
         elseif input.KeyCode == Enum.KeyCode.RightBracket then
-            toggleAntiKnockBack() -- Toggle Anti-KnockBack
+            setPowerPercentage(100) -- Set power to 100%
+        elseif input.KeyCode == Enum.KeyCode.Comma then
+            setPowerPercentage(75) -- Set power to 75%
         end
     end
 end)
