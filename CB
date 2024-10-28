@@ -10,6 +10,7 @@ local Player = Players.LocalPlayer
 -- Variables for power management
 local OldPercentage = 100
 local Power = 100
+local isFivePercent = false -- Track the state
 
 -- Function to set power percentage
 local function setPowerPercentage(Percentage)
@@ -32,11 +33,17 @@ end
 UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
     if not gameProcessedEvent then
         if input.KeyCode == Enum.KeyCode.LeftBracket then
-            setPowerPercentage(75) -- Set power to 5%
+            setPowerPercentage(75) -- Set power to 75%
         elseif input.KeyCode == Enum.KeyCode.RightBracket then
             setPowerPercentage(100) -- Set power to 100%
         elseif input.KeyCode == Enum.KeyCode.Semicolon then
-            setPowerPercentage(5) -- Set power to 75%
+            -- Toggle between 5% and 100%
+            if isFivePercent then
+                setPowerPercentage(100) -- Set to 100%
+            else
+                setPowerPercentage(5) -- Set to 5%
+            end
+            isFivePercent = not isFivePercent -- Toggle the state
         elseif input.KeyCode == Enum.KeyCode.Comma then
             setPowerPercentage(50) -- Set power to 50%
         end
