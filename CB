@@ -35,8 +35,10 @@ UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
             setPowerPercentage(5) -- Set power to 5%
         elseif input.KeyCode == Enum.KeyCode.RightBracket then
             setPowerPercentage(100) -- Set power to 100%
-        elseif input.KeyCode == Enum.KeyCode.Comma then
+        elseif input.KeyCode == Enum.KeyCode.Semicolon then
             setPowerPercentage(75) -- Set power to 75%
+elseif input.KeyCode == Enum.KeyCode.Comma then
+            setPowerPercentage(50) -- Set power to 75%
         end
     end
 end)
