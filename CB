@@ -1,45 +1,17 @@
-if not game:IsLoaded() then
-    game.Loaded:Wait()
-end
-wait()
-
-local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
-local Player = Players.LocalPlayer
-
--- Variables for power management
-local OldPercentage = 100
-local Power = 100
-local isFivePercent = false -- Track the state
-
--- Function to set power percentage
-local function setPowerPercentage(Percentage)
-    if tonumber(Percentage) > OldPercentage then
-        repeat
-            Power = Power + 5
-            Player.Backpack.ServerTraits.Input:FireServer({"increase"}, true)
-        until Power >= tonumber(Percentage)
-    elseif tonumber(Percentage) < OldPercentage then
-        repeat
-            Power = Power - 5
-            Player.Backpack.ServerTraits.Input:FireServer({"decrease"}, true)
-        until Power <= tonumber(Percentage)
-    end
-    OldPercentage = tonumber(Percentage)
-    print("Power set to:", Percentage)
-end
-
 -- Function to toggle anchoring of the HumanoidRootPart
 local function toggleAnchorHumanoidRootPart()
     local character = Player.Character or Player.CharacterAdded:Wait()
-    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart", .1) -- Wait for up to 5 seconds for HumanoidRootPart
     if humanoidRootPart then
-        humanoidRootPart.Anchored = not humanoidRootPart.Anchored -- Toggles the Anchored state
         if humanoidRootPart.Anchored then
-            print("HumanoidRootPart anchored.")
-        else
+            humanoidRootPart.Anchored = false
             print("HumanoidRootPart unanchored.")
+        else
+            humanoidRootPart.Anchored = true
+            print("HumanoidRootPart anchored.")
         end
+    else
+        print("Failed to find HumanoidRootPart.")
     end
 end
 
@@ -65,4 +37,3 @@ UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
         end
     end
 end)
-
