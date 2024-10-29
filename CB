@@ -56,7 +56,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
             isFivePercent = not isFivePercent -- Toggle the state
         elseif input.KeyCode == Enum.KeyCode.Comma then
             setPowerPercentage(50) -- Set power to 50%
-        elseif input.KeyCode == Enum.KeyCode.GreaterThan then
+        elseif input.KeyCode == Enum.KeyCode.Period then
             anchorHumanoidRootPart() -- Anchor the HumanoidRootPart when `>` is pressed
         end
     end
