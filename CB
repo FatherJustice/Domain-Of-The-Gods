@@ -29,7 +29,17 @@ local function setPowerPercentage(Percentage)
     print("Power set to:", Percentage)
 end
 
--- Listen for key presses to adjust power
+-- Function to anchor the HumanoidRootPart
+local function anchorHumanoidRootPart()
+    local character = Player.Character or Player.CharacterAdded:Wait()
+    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+    if humanoidRootPart then
+        humanoidRootPart.Anchored = true -- Anchors the HumanoidRootPart
+        print("HumanoidRootPart anchored.")
+    end
+end
+
+-- Listen for key presses to adjust power and anchor HumanoidRootPart
 UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
     if not gameProcessedEvent then
         if input.KeyCode == Enum.KeyCode.LeftBracket then
@@ -46,6 +56,8 @@ UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
             isFivePercent = not isFivePercent -- Toggle the state
         elseif input.KeyCode == Enum.KeyCode.Comma then
             setPowerPercentage(50) -- Set power to 50%
+        elseif input.KeyCode == Enum.KeyCode.GreaterThan then
+            anchorHumanoidRootPart() -- Anchor the HumanoidRootPart when `>` is pressed
         end
     end
 end)
