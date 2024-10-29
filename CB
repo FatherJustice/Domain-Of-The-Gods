@@ -1,39 +1,53 @@
--- Function to toggle anchoring of the HumanoidRootPart
-local function toggleAnchorHumanoidRootPart()
-    local character = Player.Character or Player.CharacterAdded:Wait()
-    local humanoidRootPart = character:WaitForChild("HumanoidRootPart", .1) -- Wait for up to 5 seconds for HumanoidRootPart
-    if humanoidRootPart then
-        if humanoidRootPart.Anchored then
-            humanoidRootPart.Anchored = false
-            print("HumanoidRootPart unanchored.")
-        else
-            humanoidRootPart.Anchored = true
-            print("HumanoidRootPart anchored.")
-        end
-    else
-        print("Failed to find HumanoidRootPart.")
+if not game:IsLoaded() then
+    game.Loaded:Wait()
+end
+wait()
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local Player = Players.LocalPlayer
+
+-- Variables for power management
+local OldPercentage = 100
+local Power = 100
+local isFivePercent = false -- Track the state
+
+-- Function to set power percentage
+local function setPowerPercentage(Percentage)
+    Percentage = tonumber(Percentage)
+    if Percentage > OldPercentage then
+        repeat
+            Power = Power + 5
+            Player.Backpack.ServerTraits.Input:FireServer({"increase"}, true)
+        until Power >= Percentage
+    elseif Percentage < OldPercentage then
+        repeat
+            Power = Power - 5
+            Player.Backpack.ServerTraits.Input:FireServer({"decrease"}, true)
+        until Power <= Percentage
     end
+    OldPercentage = Percentage
+    print("Power set to:", Percentage)
 end
 
--- Listen for key presses to adjust power and toggle anchor HumanoidRootPart
+-- Key mappings
+local keyBindings = {
+    [Enum.KeyCode.LeftBracket] = 75,
+    [Enum.KeyCode.RightBracket] = 100,
+    [Enum.KeyCode.Comma] = 50,
+    [Enum.KeyCode.Semicolon] = function()
+        isFivePercent = not isFivePercent
+        return isFivePercent and 5 or 100
+    end,
+}
+
+-- Listen for key presses to adjust power
 UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
     if not gameProcessedEvent then
-        if input.KeyCode == Enum.KeyCode.LeftBracket then
-            setPowerPercentage(60) -- Set power to 75%
-        elseif input.KeyCode == Enum.KeyCode.RightBracket then
-            setPowerPercentage(100) -- Set power to 100%
-        elseif input.KeyCode == Enum.KeyCode.Semicolon then
-            -- Toggle between 5% and 100%
-            if isFivePercent then
-                setPowerPercentage(100) -- Set to 100%
-            else
-                setPowerPercentage(5) -- Set to 5%
-            end
-            isFivePercent = not isFivePercent -- Toggle the state
-        elseif input.KeyCode == Enum.KeyCode.Comma then
-            setPowerPercentage(50) -- Set power to 50%
-        elseif input.KeyCode == Enum.KeyCode.Period then
-            toggleAnchorHumanoidRootPart() -- Toggle anchor state of the HumanoidRootPart when `.` is pressed
+        local action = keyBindings[input.KeyCode]
+        if action then
+            local targetPercentage = typeof(action) == "function" and action() or action
+            setPowerPercentage(targetPercentage)
         end
     end
 end)
