@@ -1,0 +1,25 @@
+local function removeFace(character)
+    local head = character:WaitForChild("Head")
+    local face = head:WaitForChild("face")
+    if face then
+        face:Destroy()
+    end
+end
+
+game.Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function(character)
+        if player == game.Players.LocalPlayer then
+            removeFace(character)
+        end
+    end)
+end)
+
+
+if game.Players.LocalPlayer.Character then
+    removeFace(game.Players.LocalPlayer.Character)
+end
+
+
+game.Players.LocalPlayer.CharacterAdded:Connect(function(character)
+    removeFace(character)
+end)
