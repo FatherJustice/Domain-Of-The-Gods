@@ -6,7 +6,7 @@ plr.CharacterAdded:Connect(function(char)
     repeat
         task.wait()
         
-        local powerOutput = game.Workspace.Live:FindFirstChild(plr.Name)
+        local powerOutput = game.Workspace.Live:FindFirstChild(plr)
         if powerOutput then
             powerOutput = powerOutput:FindFirstChild("PowerOutput")
         end
