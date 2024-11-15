@@ -11,8 +11,6 @@ local Player = Players.LocalPlayer
 local OldPercentage = 100
 local Power = 100
 local isFivePercent = false -- Track the state
-local isLooping = false  -- To track whether the loop is active
-local toggleCoroutine = nil  -- To store the coroutine for controlling the loop
 
 -- Function to set power percentage
 local function setPowerPercentage(Percentage)
@@ -35,28 +33,13 @@ end
 local function toggleAnchorHumanoidRootPart()
     local character = Player.Character or Player.CharacterAdded:Wait()
     local humanoidRootPart = character:WaitForChild("HumanoidRootPart", 5) -- Wait for up to 5 seconds for HumanoidRootPart
-    
     if humanoidRootPart then
-        if isLooping then
-            -- Stop the loop by canceling the coroutine
-            if toggleCoroutine then
-                coroutine.close(toggleCoroutine)
-                toggleCoroutine = nil
-            end
-            isLooping = false
+        if humanoidRootPart.Anchored then
             humanoidRootPart.Anchored = false
             print("HumanoidRootPart unanchored.")
         else
-            -- Start the loop to toggle anchoring continuously
-            isLooping = true
-            toggleCoroutine = coroutine.create(function()
-                while isLooping do
-                    humanoidRootPart.Anchored = not humanoidRootPart.Anchored
-                    print(humanoidRootPart.Anchored and "HumanoidRootPart anchored." or "HumanoidRootPart unanchored.")
-                    task.wait(.1)  -- Adjust the delay between toggles (1 second here)
-                end
-            end)
-            coroutine.resume(toggleCoroutine)
+            humanoidRootPart.Anchored = true
+            print("HumanoidRootPart anchored.")
         end
     else
         print("Failed to find HumanoidRootPart.")
@@ -79,7 +62,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
             end
             isFivePercent = not isFivePercent -- Toggle the state
         elseif input.KeyCode == Enum.KeyCode.Period then
-            toggleAnchorHumanoidRootPart() -- Toggle anchor state of the HumanoidRootPart when `.` is pressed
+            toggleAnchorHumanoidRootPart() -- Toggle anchor state of the HumanoidRootPart when . is pressed
         end
     end
 end)
